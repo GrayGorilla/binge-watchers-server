@@ -8,7 +8,7 @@ const port = 5000;
 app.use(cors());
 
 app.get('/data', function(req, res) {
-    res.status(200).json({ "items": [{"message": "Hello from Backend"}]});
+    res.status(200).json({ "items": [{"message": "Hello from Backend!"}]});
     console.log('Data sent to Client.');
 });
 
