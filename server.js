@@ -29,7 +29,6 @@ app.get('/data', function(req, res) {
       values.push(req.query[key]);
     }
     let results = data.searchText(columns, values);
-    console.log(results);
     res.status(200).json({"results": results});
     console.log('Data sent to Client.');
 });
