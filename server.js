@@ -4,10 +4,8 @@ const csv = require('./csv.js');
 const bodyParser = require('body-parser');
 
 const parseCSV = csv.parseCSV;
-
-let data = parseCSV("data/USvideos.csv");
-
-var app = express();
+const data = parseCSV("data/USvideos.csv");
+const app = express();
 const port = 5000;
 
 // Removes CORS error
@@ -17,7 +15,8 @@ app.use(bodyParser.json());
 
 app.get('/test', function(req, res) {
     res.status(200).json({ "items": [{"message": "Hello from Backend!"}]});
-    console.log('Data sent to Client.');
+    console.log('Test data sent to Client.');
+    console.log('\nServer is running on PORT:', port);
 });
 
 
@@ -29,8 +28,13 @@ app.get('/data', function(req, res) {
       values.push(req.query[key]);
     }
     let results = data.searchText(columns, values);
+
+    // Output Search Results
+    console.log('Search Results:');
+    console.log(results);
+    
     res.status(200).json({"results": results});
-    console.log('Data sent to Client.');
+    console.log('\nServer is running on PORT:', port);
 });
 
 app.listen(port, function() {
