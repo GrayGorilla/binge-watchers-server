@@ -1,11 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const csv = require('./csv.js');
+const data = require('./data.js');
 const bodyParser = require('body-parser');
 
 const parseCSV = csv.parseCSV;
 
-const data = parseCSV("data/USvideos.csv");
+const USvideos = parseCSV("data/USvideos.csv");
 const app = express();
 
 const port = 5000;
@@ -33,7 +34,7 @@ app.get('/data', function(req, res) {
       columns.push(key);
       values.push(req.query[key]);
     }
-    let results = data.searchText(columns, values);
+    let results = USvideos.searchText(columns, values);
 
     // Output Search Results
     console.log('Search Results:');
@@ -44,19 +45,28 @@ app.get('/data', function(req, res) {
 });
 
 app.put('/data', function(req, res) {
-    let video_id = req.query["video_id"];
-    console.log(video_id);
-    if(video_id == undefined){
-      res.status(405).json({"error": "request video_id was blank"});
+    let indexText = req.query["index"];
+    console.log("index: ", indexText);
+    if(indexText == undefined || indexText == ""){
+      res.status(405).json({"error": "request index was blank"});
+      return;
     }
-    console.log(video_id);
-    let index = data.searchIndex([0], [video_id]);
-    console.log(index);
-    if(index.length != 1){
-      res.status(405).json({"error": "request video_id not found"});
+    let index = parseInt(indexText, 10);
+    console.log("index: ", index);
+    if(Number.isNaN(index) || index > USvideos.rows.length || index < 0){
+      res.status(405).json({"error": "request index not valid"});
+      return;
     }
     else{
-      res.status(200).json({"results": "Nothing Happened Yet"});
+      let columns = [];
+      let rows = [];
+      for(key in req.query){
+        if(key != "index"){
+          columns.push(key);
+          rows.push(req.query[key]);
+        }
+      }
+      
     }
 });
 
