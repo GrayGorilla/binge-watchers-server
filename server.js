@@ -5,12 +5,9 @@ const bodyParser = require('body-parser');
 
 const parseCSV = csv.parseCSV;
 
-const start = Date.now();
-let data = parseCSV("data/USvideos.csv");
-console.log("Search time: ", Date.now()- start);
+const data = parseCSV("data/USvideos.csv");
+const app = express();
 
-
-var app = express();
 const port = 5000;
 
 //const start = Date.now()
@@ -24,7 +21,8 @@ app.use(bodyParser.json());
 
 app.get('/test', function(req, res) {
     res.status(200).json({ "items": [{"message": "Hello from Backend!"}]});
-    console.log('Data sent to Client.');
+    console.log('Test data sent to Client.');
+    console.log('\nServer is running on PORT:', port);
 });
 
 
@@ -36,7 +34,13 @@ app.get('/data', function(req, res) {
       values.push(req.query[key]);
     }
     let results = data.searchText(columns, values);
+
+    // Output Search Results
+    console.log('Search Results:');
+    console.log(results);
+    
     res.status(200).json({"results": results});
+
 });
 
 app.put('/data', function(req, res) {
