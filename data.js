@@ -116,6 +116,67 @@ class Data {
     }
     this.updateIndex(index, row);
   }
+  
+  insertRow(row){
+    if(row.length != this.columns.length){
+      return null;
+    }
+    else{ 
+      let index = this.rows.length;
+      this.rows.push(row);
+      for(let i = 0; i < this.columns.length; i++){
+        let temp = this.maps[i].get(row[i]);
+        if(temp == undefined){
+          let tempSet = new Set();
+          tempSet.add(index);
+          this.maps[i].set(row[i], tempSet)
+        }
+        else{
+          temp.add(index);
+        }
+      }
+    }
+  }
+  
+  createRow(json){
+    let temp = 0;
+    let row = [];
+    for(let i = 0; i < this.columns.length; i++){
+      temp = json[this.columns[i]];
+      if(temp == undefined){
+        row.push("");
+      }
+      else{
+        row.push(temp);
+      }
+    }
+    this.insertRow(row);
+  }
+  
+  deleteRow(index){
+    let temp = 0;
+    for(let i = 0; i < this.columns.length; i++){
+      temp = this.maps[i].get(this.rows[index][i]);
+      if (temp.size == 0){
+        this.maps[i].delete(this.rows[index][i]);
+      }
+      else{
+        temp.delete(index);
+      }
+    }
+    this.rows.splice(index, 1);
+  }
+
+  removeRows(indexes){
+    indexes.sort().reverse();
+    if(indexes[0] < 0 || indexes[0] > rows.length || indexes[indexes.length - 1] < 0){
+      return false;
+    }
+    for(let i = 0; i < indexes.length; i++){
+      deleteRow(indexes[i]);
+    }
+    return true;
+  }
 }
 
 module.exports = {
