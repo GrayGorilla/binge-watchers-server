@@ -12,17 +12,12 @@ class Data {
     for(let i = 0; i < this.rows.length; i++){
       for(let j = 0; j < this.rows[i].length; j++){
         if(this.maps[j].has(rows[i][j])){
-          this.maps[j].get(this.rows[i][j]).push(i);
+          this.maps[j].get(this.rows[i][j]).add(i);
         }
         else{
-          this.maps[j].set(this.rows[i][j], [i]);
-        }
-      }
-    }
-    for(let i = 0; i < this.maps.length; i++){
-      for(let j = 0; j < this.maps[i].length; j++){
-        if(this.maps[i].has(j)){
-          this.maps[i].get(j).sort();
+          var temp = new Set();
+          temp.add(i);
+          this.maps[j].set(this.rows[i][j], temp);
         }
       }
     }
@@ -35,8 +30,11 @@ class Data {
     let possibleResults = [];
     let results = [];
     if(columnsIndex.length == 1){
-      possibleResults = this.maps[columnsIndex[0]].get(values[0]);
-      if(possibleResults != undefined){
+      let possibleResultsSet = this.maps[columnsIndex[0]].get(values[0]);
+      console.log("possibleResultsSet: ", possibleResultsSet);
+      if(possibleResultsSet != undefined){
+        possibleResults = Array.from(possibleResultsSet.values());
+        possibleResults.sort();
         for(let i = 0; i < possibleResults.length; i++){
           results.push(this.rows[possibleResults[i]]);
         }
@@ -49,7 +47,7 @@ class Data {
     for(let i = 0; i < columnsIndex.length; i++){
       let newResults = this.maps[i].get(values[i]);
       if(newResults != undefined){
-        possibleResults.concat(newResults);
+        possibleResults.concat(Array.from(newResults.values()));
       }
     }
     possibleResults.sort();
@@ -87,6 +85,43 @@ class Data {
     else{
       return this.searchIndex(searchColumns, values);
     }
+  }
+  
+
+  updateIndex(index, row){
+    if(row.length != this.columns.length || (index > this.rows.length || index < 0)){
+      return null;
+    }
+    else{
+      for(let i = 0; i < this.maps.length; i++){
+        this.maps[i].get(this.rows[index][i]).delete(index);
+        let temp = this.maps[i].get(row[i]);
+        if(temp == undefined){
+          let tempSet = new Set();
+          tempSet.add(index);
+          this.maps[i].set(row[i], tempSet)
+        }
+        else{
+          temp.add(index);
+        }
+      }
+      this.rows[index] = row;
+    }
+  }
+
+  updateText(index, json){
+    let row = [];
+    
+    for(let i = 0; i < this.columns.length; i++){
+      let temp = json[this.columns[i]];
+      if(temp == undefined){
+        row.push(this.rows[index][i]);
+      }
+      else{
+        row.push(temp);
+      }
+    }
+    this.updateIndex(index, row);
   }
 }
 
