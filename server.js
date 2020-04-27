@@ -34,7 +34,7 @@ app.get('/data', function(req, res) {
 });
 
 app.put('/data', function(req, res) {
-    let indexText = req.body["index"];
+    let indexText = req.query["index"];
     if(indexText == undefined || indexText == ""){
       res.status(405).json({"status": "ERROR: request index was blank"});
       return;
@@ -45,18 +45,18 @@ app.put('/data', function(req, res) {
       return;
     }
     else{
-      currentDataSet.updateText(index, req.body);
+      currentDataSet.updateText(index, req.query);
       res.status(200).json({"status": "updated"});
     }
 });
 
 app.post('/data', function(req, res) {
-  currentDataSet.createRow(req.body);
+  currentDataSet.createRow(req.query);
   res.status(200).json({"status": "created"});
 });
 
 app.delete('/data', function(req, res) {
-  let indexesText = req.body["indexes"];
+  let indexesText = req.query["indexes"];
   if(indexesText == undefined){
     res.status(405).json({"status":"ERROR: indexes does not exist"});
   }
@@ -100,7 +100,7 @@ app.get('/backup', function(req, res) {
 });
 
 app.put('/backup', function(req, res) {
-  let filename = req.body["filename"];
+  let filename = req.query["filename"];
   if(filename == undefined){
     res.status(405).json({"status":"ERROR: filename does not exist"});
   }
