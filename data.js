@@ -1,5 +1,8 @@
+const fs = require('fs');
+
 var SortedMap = require("collections/sorted-map");
 var Set = require("collections/set");
+
 
 class Data {
   constructor(columns, rows){
@@ -181,6 +184,35 @@ class Data {
     }
     console.log("Data size: ", this.rows.length);
     return true;
+  }
+  
+  storeCSV( filename ){
+    var writer = fs.createWriteStream("data/" + filename, { flags: 'w'});
+    for(let i = 0; i < this.columns.length; i++){
+      writer.write("\"");
+      writer.write(this.columns[i]);
+      writer.write("\"");
+      if(i < this.columns.length-1){
+        writer.write(",");
+      }
+      else{
+        writer.write("\n");
+      }
+    }
+    for(let i = 0; i < this.rows.length; i++){
+      for(let j = 0; j < this.columns.length; j++){
+        writer.write("\"");
+        writer.write(this.rows[i][j]);
+        writer.write("\"");
+        if(j < this.columns.length-1){
+          writer.write(",");
+        }
+        else{
+          writer.write("\n");
+        }
+      }
+    }
+    writer.end();
   }
 
 }
