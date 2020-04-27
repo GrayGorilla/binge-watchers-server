@@ -31,7 +31,6 @@ class Data {
     let results = [];
     if(columnsIndex.length == 1){
       let possibleResultsSet = this.maps[columnsIndex[0]].get(values[0]);
-      console.log("possibleResultsSet: ", possibleResultsSet);
       if(possibleResultsSet != undefined){
         possibleResults = Array.from(possibleResultsSet.values());
         possibleResults.sort();
@@ -45,14 +44,13 @@ class Data {
       }
     }
     for(let i = 0; i < columnsIndex.length; i++){
-      let newResults = this.maps[i].get(values[i]);
+      let newResults = this.maps[columnsIndex[i]].get(values[i]);
       if(newResults != undefined){
-        possibleResults.concat(Array.from(newResults.values()));
+        possibleResults = possibleResults.concat(Array.from(newResults.values()));
       }
     }
     possibleResults.sort();
     for(let i = 0; i < possibleResults.length; i++){
-      numberOfResults = 0;
       let j = 1;
       while(i+j < possibleResults.length && possibleResults[i+j] == possibleResults[i]){
         j++;
