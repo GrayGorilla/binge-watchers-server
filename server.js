@@ -57,6 +57,11 @@ app.put('/data', function(req, res) {
     }
 });
 
+app.post('/data', function(req, res) {
+  USvideos.createRow(req.query);
+  res.status(200).json({"status": "created"});
+});
+
 app.listen(port, function() {
     console.log('Server is running on PORT:', port);
 });
