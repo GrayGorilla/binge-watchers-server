@@ -154,6 +154,8 @@ class Data {
   }
   
   deleteRow(index){
+    this.updateIndex(index, this.rows[this.rows.length - 1]);
+    index = this.rows.length - 1;
     let temp = 0;
     for(let i = 0; i < this.columns.length; i++){
       temp = this.maps[i].get(this.rows[index][i]);
