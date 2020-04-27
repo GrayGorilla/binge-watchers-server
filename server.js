@@ -28,13 +28,7 @@ app.get('/test', function(req, res) {
 
 
 app.get('/data', function(req, res) {
-    let columns = [];
-    let values = [];
-    for(const key in req.query){
-      columns.push(key);
-      values.push(req.query[key]);
-    }
-    let results = USvideos.searchText(columns, values);
+    let results = USvideos.searchText(req.query);
 
     // Output Search Results
     console.log('Search Results:');
