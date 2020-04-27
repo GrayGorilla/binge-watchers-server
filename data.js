@@ -62,22 +62,17 @@ class Data {
     return results;
   }
 
-  //columnsText values are values that are the same as columns, 
-  //and they are in the same order as in columns 
-  //(if "xxxx" is before "yyyy" in columns, then it has to be the same in columnsText)
-  searchText(columnsText, values){
-    if(columnsText.length != values.length){
-      return null;
-    }
+  searchText(json){
     let searchColumns = [];
-    let j = 0; 
-    for(let i = 0; i < this.columns.length && j < columnsText.length; i++){
-      if(this.columns[i] == columnsText[j]){
+    let values = [];
+    for(let i = 0; i < this.columns.length; i++){
+      let temp = json[this.columns[i]];
+      if(temp != undefined){
         searchColumns.push(i);
-        j++;
+        values.push(temp);
       }
     }
-    if( j < columnsText.length){
+    if( searchColumns.length == 0){
       return null;
     }
     else{
