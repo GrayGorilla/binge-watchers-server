@@ -28,7 +28,8 @@ class Data {
       return null;
     }
     let possibleResults = [];
-    let results = [];
+    let results = []; 
+    let resultsIndex = [];
     if(columnsIndex.length == 1){
       let possibleResultsSet = this.maps[columnsIndex[0]].get(values[0]);
       if(possibleResultsSet != undefined){
@@ -37,7 +38,7 @@ class Data {
         for(let i = 0; i < possibleResults.length; i++){
           results.push(this.rows[possibleResults[i]]);
         }
-        return results;
+        return [results, possibleResults];
       }
       else{
         return null;
@@ -57,9 +58,10 @@ class Data {
       }
       if(j >= columnsIndex.length){
         results.push(this.rows[possibleResults[i]]);
+        resultsIndex.push(possibleResults[i]);
       }
     }
-    return results;
+    return [results, resultsIndex];
   }
 
   searchText(json){
@@ -180,6 +182,7 @@ class Data {
     console.log("Data size: ", this.rows.length);
     return true;
   }
+
 }
 
 module.exports = {

@@ -24,13 +24,12 @@ app.get('/test', function(req, res) {
 
 
 app.get('/data', function(req, res) {
-    let results = currentDataSet.searchText(req.query);
-
+    let [results, resultsIndex] = currentDataSet.searchText(req.query);
     // Output Search Results
     console.log('Search Results:');
     console.log(results);
     
-    res.status(200).json({"results": results});
+    res.status(200).json({"results": results, "resultsIndex": resultsIndex});
 
 });
 
