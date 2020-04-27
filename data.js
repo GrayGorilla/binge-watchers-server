@@ -175,7 +175,9 @@ class Data {
   }
 
   removeRows(indexes){
+    //sorting by string is gonna fuck shit up
     indexes.sort().reverse();
+
     if(indexes[0] < 0 || indexes[0] > this.rows.length || indexes[indexes.length - 1] < 0){
       return false;
     }

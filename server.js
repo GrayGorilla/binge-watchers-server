@@ -56,12 +56,20 @@ app.post('/data', function(req, res) {
 });
 
 app.delete('/data', function(req, res) {
+  console.log(req.query);
   let indexesText = req.query["indexes"];
   if(indexesText == undefined){
     res.status(405).json({"status":"ERROR: indexes does not exist"});
   }
   else if(!Array.isArray(indexesText)){
-    res.status(405).json({"status":"ERROR: indexes was not an array"});
+    let temp = parseInt(indexesText, 10);
+    if(Number.isNaN(temp)){
+      res.status(405).json({"status": "ERROR: at least one index is not a number"});
+    }
+    else{
+      currentDataSet.deleteRow(temp);
+      res.status(200).json({"status":"deleted row"});
+    }
   }
   else if(indexesText.length == 0){ 
     res.status(405).json({"status":"ERROR: indexes was empty"});
