@@ -58,15 +58,8 @@ app.put('/data', function(req, res) {
       return;
     }
     else{
-      let columns = [];
-      let rows = [];
-      for(key in req.query){
-        if(key != "index"){
-          columns.push(key);
-          rows.push(req.query[key]);
-        }
-      }
-      
+      USvideos.updateText(index, req.query);
+      res.status(200).json({"status": "updated"});
     }
 });
 
