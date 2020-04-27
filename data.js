@@ -169,12 +169,13 @@ class Data {
 
   removeRows(indexes){
     indexes.sort().reverse();
-    if(indexes[0] < 0 || indexes[0] > rows.length || indexes[indexes.length - 1] < 0){
+    if(indexes[0] < 0 || indexes[0] > this.rows.length || indexes[indexes.length - 1] < 0){
       return false;
     }
     for(let i = 0; i < indexes.length; i++){
-      deleteRow(indexes[i]);
+      this.deleteRow(indexes[i]);
     }
+    console.log("Data size: ", this.rows.length);
     return true;
   }
 }

@@ -5,15 +5,11 @@ const data = require('./data.js');
 const bodyParser = require('body-parser');
 
 const parseCSV = csv.parseCSV;
-
-const USvideos = parseCSV("data/USvideos.csv");
 const app = express();
 
 const port = 5000;
 
-//const start = Date.now()
-//data.searchText(["channel_title"],["Vox"]);
-//console.log("Search time: ", Date.now()- start);
+const USvideos = parseCSV("data/USvideos.csv");
 
 // Removes CORS error
 app.use(cors());
@@ -40,15 +36,13 @@ app.get('/data', function(req, res) {
 
 app.put('/data', function(req, res) {
     let indexText = req.query["index"];
-    console.log("index: ", indexText);
     if(indexText == undefined || indexText == ""){
-      res.status(405).json({"error": "request index was blank"});
+      res.status(405).json({"status": "ERROR: request index was blank"});
       return;
     }
     let index = parseInt(indexText, 10);
-    console.log("index: ", index);
     if(Number.isNaN(index) || index > USvideos.rows.length || index < 0){
-      res.status(405).json({"error": "request index not valid"});
+      res.status(405).json({"status": "ERROR: request index not valid"});
       return;
     }
     else{
@@ -60,6 +54,39 @@ app.put('/data', function(req, res) {
 app.post('/data', function(req, res) {
   USvideos.createRow(req.query);
   res.status(200).json({"status": "created"});
+});
+
+app.delete('/data', function(req, res) {
+  let indexesText = req.query["indexes"];
+  if(indexesText == undefined){
+    res.status(405).json({"status":"ERROR: indexes does not exist"});
+  }
+  else if(!Array.isArray(indexesText)){
+    res.status(405).json({"status":"ERROR: indexes was not an array"});
+  }
+  else if(indexesText.length == 0){ 
+    res.status(405).json({"status":"ERROR: indexes was empty"});
+  }
+  else{
+    let temp = 0;
+    let indexes = [];
+    for(let i = 0; i < indexesText.length; i++){
+      temp = parseInt(indexesText[i], 10);
+      if(Number.isNaN(temp)){
+        res.status(405).json({"status": "ERROR: at least one index is not a number"});
+        return;
+      }
+      else{
+        indexes.push(temp);
+      }
+    }
+    if(!USvideos.removeRows(indexes)){
+      res.status(405).json({"status": "ERROR: indexes out of range"});
+    }
+    else{
+      res.status(200).json({"status": "deleted"});
+    }
+  }
 });
 
 app.listen(port, function() {
