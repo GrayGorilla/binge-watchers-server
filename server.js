@@ -9,7 +9,7 @@ const app = express();
 
 const port = 5000;
 
-const USvideos = parseCSV("data/USvideos.csv");
+const currentDataSet = parseCSV("data/USvideos.csv");
 
 // Removes CORS error
 app.use(cors());
@@ -24,7 +24,7 @@ app.get('/test', function(req, res) {
 
 
 app.get('/data', function(req, res) {
-    let results = USvideos.searchText(req.query);
+    let results = currentDataSet.searchText(req.query);
 
     // Output Search Results
     console.log('Search Results:');
@@ -41,18 +41,18 @@ app.put('/data', function(req, res) {
       return;
     }
     let index = parseInt(indexText, 10);
-    if(Number.isNaN(index) || index > USvideos.rows.length || index < 0){
+    if(Number.isNaN(index) || index > currentDataSet.rows.length || index < 0){
       res.status(405).json({"status": "ERROR: request index not valid"});
       return;
     }
     else{
-      USvideos.updateText(index, req.query);
+      currentDataSet.updateText(index, req.query);
       res.status(200).json({"status": "updated"});
     }
 });
 
 app.post('/data', function(req, res) {
-  USvideos.createRow(req.query);
+  currentDataSet.createRow(req.query);
   res.status(200).json({"status": "created"});
 });
 
@@ -80,7 +80,7 @@ app.delete('/data', function(req, res) {
         indexes.push(temp);
       }
     }
-    if(!USvideos.removeRows(indexes)){
+    if(!currentDataset.removeRows(indexes)){
       res.status(405).json({"status": "ERROR: indexes out of range"});
     }
     else{
