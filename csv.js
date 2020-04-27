@@ -42,14 +42,14 @@ class Data {
       return results;
     }
     for(let i = 0; i < columnsIndex.length; i++){
-      let newResults = this.maps[i].get(values[i]);
+      let newResults = this.maps[columnsIndex[i]].get(values[i]);
       if(newResults != undefined){
-        possibleResults.concat(newResults);
+        possibleResults = possibleResults.concat(newResults);
+
       }
     }
     possibleResults.sort();
     for(let i = 0; i < possibleResults.length; i++){
-      numberOfResults = 0;
       let j = 1;
       while(i+j < possibleResults.length && possibleResults[i+j] == possibleResults[i]){
         j++;
