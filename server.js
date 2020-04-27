@@ -9,7 +9,7 @@ const app = express();
 
 const port = 5000;
 
-const currentDataSet = parseCSV("data/USvideos.csv");
+var currentDataSet = parseCSV("USvideos");
 
 // Removes CORS error
 app.use(cors());
@@ -79,12 +79,34 @@ app.delete('/data', function(req, res) {
         indexes.push(temp);
       }
     }
-    if(!currentDataset.removeRows(indexes)){
+    if(!currentDataSet.removeRows(indexes)){
       res.status(405).json({"status": "ERROR: indexes out of range"});
     }
     else{
       res.status(200).json({"status": "deleted"});
     }
+  }
+});
+
+app.get('/backup', function(req, res) {
+  let filename = req.query["filename"];
+  if(filename == undefined){
+    res.status(405).json({"status":"ERROR: filename does not exist"});
+  }
+  else{
+    currentDataSet = parseCSV(filename);
+    res.status(200).json({"status": "loaded"});
+  }
+});
+
+app.put('/backup', function(req, res) {
+  let filename = req.query["filename"];
+  if(filename == undefined){
+    res.status(405).json({"status":"ERROR: filename does not exist"});
+  }
+  else{
+    currentDataSet.storeCSV(filename);
+    res.status(200).json({"status": "stored"});
   }
 });
 

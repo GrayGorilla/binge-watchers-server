@@ -4,7 +4,7 @@ const data = require('./data.js');
 var Data = data.Data
 
 function parseCSV(filename){
-  let data = fs.readFileSync(filename, 'utf-8');
+  let data = fs.readFileSync("data/" + filename + ".csv", 'utf-8');
   let rowStrings = data.toString().replace(/\r/gm, "").trim().split("\n"); 
   let columns = rowStrings[0].toString().split(",");
   for(let i = 0; i < columns.length; i++){

@@ -44,7 +44,7 @@ class Data {
         return [results, possibleResults];
       }
       else{
-        return null;
+        return [[],[]];
       }
     }
     for(let i = 0; i < columnsIndex.length; i++){
@@ -187,11 +187,9 @@ class Data {
   }
   
   storeCSV( filename ){
-    var writer = fs.createWriteStream("data/" + filename, { flags: 'w'});
+    var writer = fs.createWriteStream("data/" + filename + ".csv", { flags: 'w'});
     for(let i = 0; i < this.columns.length; i++){
-      writer.write("\"");
       writer.write(this.columns[i]);
-      writer.write("\"");
       if(i < this.columns.length-1){
         writer.write(",");
       }
