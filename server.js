@@ -25,12 +25,11 @@ app.get('/test', function(req, res) {
 
 app.get('/data', function(req, res) {
     let [results, resultsIndex] = currentDataSet.searchText(req.query);
+    res.status(200).json({"results": results, "resultsIndex": resultsIndex});
     // Output Search Results
     console.log('Search Results:');
     console.log(results);
-    
-    res.status(200).json({"results": results, "resultsIndex": resultsIndex});
-
+    console.log('\nServer is running on PORT:', port);
 });
 
 app.put('/data', function(req, res) {
@@ -47,12 +46,20 @@ app.put('/data', function(req, res) {
     else{
       currentDataSet.updateText(index, req.query);
       res.status(200).json({"status": "updated"});
+      // Output request query
+      console.log('Put successful, entry updated:');
+      console.log(req.query);
+      console.log('\nServer is running on PORT:', port);
     }
 });
 
 app.post('/data', function(req, res) {
   currentDataSet.createRow(req.query);
   res.status(200).json({"status": "created"});
+  // Output request query
+  console.log('Post successful, entry inserted:');
+  console.log(req.query);
+  console.log('\nServer is running on PORT:', port);
 });
 
 app.delete('/data', function(req, res) {
@@ -69,6 +76,10 @@ app.delete('/data', function(req, res) {
     else{
       currentDataSet.deleteRow(temp);
       res.status(200).json({"status":"deleted row"});
+      // Output request query
+      console.log('Delete successful, entry deleted:');
+      console.log(req.query);
+      console.log('\nServer is running on PORT:', port);
     }
   }
   else if(indexesText.length == 0){ 
@@ -91,7 +102,11 @@ app.delete('/data', function(req, res) {
       res.status(405).json({"status": "ERROR: indexes out of range"});
     }
     else{
-      res.status(200).json({"status": "deleted"});
+      res.status(200).json({"status": "deleted rows"});
+      // Output request query
+      console.log('Delete successful, entries deleted:');
+      console.log(req.query);
+      console.log('\nServer is running on PORT:', port);
     }
   }
 });
@@ -104,6 +119,10 @@ app.get('/backup', function(req, res) {
   else{
     currentDataSet = parseCSV(filename);
     res.status(200).json({"status": "loaded"});
+    // Output request query
+    console.log('Get successful, file loaded:');
+    console.log(req.query);
+    console.log('\nServer is running on PORT:', port);
   }
 });
 
@@ -115,6 +134,10 @@ app.put('/backup', function(req, res) {
   else{
     currentDataSet.storeCSV(filename);
     res.status(200).json({"status": "stored"});
+    // Output request query
+    console.log('Put successful, file stored:');
+    console.log(req.query);
+    console.log('\nServer is running on PORT:', port); 
   }
 });
 
