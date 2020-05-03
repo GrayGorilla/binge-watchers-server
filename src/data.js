@@ -117,6 +117,31 @@ class Data {
         let temp = new Map().set("buzzwords", buzzwords);
         return map_to_object(temp);
       }
+      else if(json["individual_tags"] == "true" ){
+        let tags = new Map();
+        let uniqueVideos = new Set();
+        for(let i = 0; i < this.rows.length; i++){
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            let tagsText = this.rows[i][6].match(/[^\"\|\"]+/gi);
+            let tag;
+            if(tagsText != null){
+              for(tag of tagsText){
+                let lowerCase = tag.toLowerCase();
+                let temp = tags.get(lowerCase);
+                if(temp == undefined){
+                  tags.set(lowerCase,1);
+                }
+                else{
+                  tags.set(lowerCase,temp+1);
+                }
+              }
+            }
+          }
+        }
+        let temp = new Map().set("individual_tags", tags);
+        return map_to_object(temp);
+      } 
       else{
         return undefined;
       }
@@ -173,7 +198,8 @@ class Data {
         return map_to_object(new Map().set("results",results).set("resultsIndex",resultsIndex).set("individual_tags", tags));
       }
       else{
-        return this.searchIndex(searchColumns, values);
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        return map_to_object(new Map().set("results", results).set("resultsIndex", resultsIndex));
       }
     } 
   }
