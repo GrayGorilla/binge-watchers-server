@@ -37,7 +37,7 @@ class Data {
       let possibleResultsSet = this.maps[columnsIndex[0]].get(values[0]);
       if(possibleResultsSet != undefined){
         possibleResults = Array.from(possibleResultsSet.values());
-        possibleResults.sort();
+        possibleResults.sort(function(a,b){return a-b});
         for(let i = 0; i < possibleResults.length; i++){
           results.push(this.rows[possibleResults[i]]);
         }
@@ -53,7 +53,7 @@ class Data {
         possibleResults = possibleResults.concat(Array.from(newResults.values()));
       }
     }
-    possibleResults.sort();
+    possibleResults.sort(function(a,b){return a-b});
     for(let i = 0; i < possibleResults.length; i++){
       let j = 1;
       while(i+j < possibleResults.length && possibleResults[i+j] == possibleResults[i]){
@@ -175,8 +175,7 @@ class Data {
   }
 
   removeRows(indexes){
-    //sorting by string is gonna fuck shit up
-    indexes.sort().reverse();
+    indexes.sort(function(a,b){return a-b}).reverse();
 
     if(indexes[0] < 0 || indexes[0] > this.rows.length || indexes[indexes.length - 1] < 0){
       return false;
