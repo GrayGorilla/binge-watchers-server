@@ -24,11 +24,11 @@ app.get('/test', function(req, res) {
 
 
 app.get('/data', function(req, res) {
-    let [results, resultsIndex] = currentDataSet.searchText(req.query);
-    res.status(200).json({"results": results, "resultsIndex": resultsIndex});
+    let json = currentDataSet.searchText(req.query);
+    res.status(200).json(json);
     // Output Search Results
     console.log('Search Results:');
-    console.log(results);
+    console.log(json);
     console.log('\nServer is running on PORT:', port);
 });
 
