@@ -4,6 +4,20 @@ var SortedMap = require("collections/sorted-map");
 var Set = require("collections/set");
 
 
+//davemackintosh's map to json gist
+function map_to_object(map) {
+    const out = Object.create(null)
+    map.forEach((value, key) => {
+      if (value instanceof Map) {
+        out[key] = map_to_object(value)
+      }
+      else {
+        out[key] = value
+      }
+    })
+    return out
+}
+
 class Data {
   constructor(columns, rows){
     this.columns = columns;
@@ -80,24 +94,28 @@ class Data {
     if( searchColumns.length == 0){
       if(json["buzzwords"] == "true" ){
         let buzzwords = new Map();
+        let uniqueVideos = new Set();
         for(let i = 0; i < this.rows.length; i++){
-          console.log(i);
-          let words = this.rows[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
-          let word;
-          if(words != null){
-            for(word of words){
-              let lowerCase = word.toLowerCase();
-              let temp = buzzwords.get(lowerCase);
-              if(temp == undefined){
-                buzzwords.set(lowerCase,1);
-              }
-              else{
-                buzzwords.set(lowerCase,temp+1);
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            let words = this.rows[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
+            let word;
+            if(words != null){
+              for(word of words){
+                let lowerCase = word.toLowerCase();
+                let temp = buzzwords.get(lowerCase);
+                if(temp == undefined){
+                  buzzwords.set(lowerCase,1);
+                }
+                else{
+                  buzzwords.set(lowerCase,temp+1);
+                }
               }
             }
           }
         }
-        return [Array.from(buzzwords.keys()), Array.from(buzzwords.values())]
+        let temp = new Map().set("buzzwords", buzzwords);
+        return map_to_object(temp);
       }
       else{
         return undefined;
@@ -107,23 +125,52 @@ class Data {
       if(json["buzzwords"] == "true" ){
         let [results, resultsIndex] = this.searchIndex(searchColumns, values);
         let buzzwords = new Map();
+        let uniqueVideos = new Set();
         for(let i = 0; i < results.length; i++){
-          let j = 0;
-          while(j < results[i][2].length){
-            let k = 0;
-            while(isWordChar(results[i][2][k])){
-              k++;
-            }
-            let temp = results[i][2].substring(j,k);
-            let inMap = buzzwords[temp];
-            if(inMap = undefined){
-              inMap.set(temp, 1);
-            }
-            else{
-              inMap++;
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            let words = results[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
+            let word;
+            if(words != null){
+              for(word of words){
+                let lowerCase = word.toLowerCase();
+                let temp = buzzwords.get(lowerCase);
+                if(temp == undefined){
+                  buzzwords.set(lowerCase,1);
+                }
+                else{
+                  buzzwords.set(lowerCase,temp+1);
+                }
+              }
             }
           }
         }
+        return map_to_object(new Map().set("results",results).set("resultsIndex",resultsIndex).set("buzzwords", buzzwords));
+      }
+      else if(json["individual_tags"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let tags = new Map();
+        let uniqueVideos = new Set();
+        for(let i = 0; i < results.length; i++){
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            let tagsText = results[i][6].match(/[^\"\|\"]+/gi);
+            let tag;
+            if(tagsText != null){
+              for(tag of tagsText){
+                let lowerCase = tag.toLowerCase();
+                let temp = tags.get(lowerCase);
+                if(temp == undefined){
+                  tags.set(lowerCase,1);
+                }
+                else{
+                  tags.set(lowerCase,temp+1);
+                }
+              }
+            }
+          }
+        }
+        return map_to_object(new Map().set("results",results).set("resultsIndex",resultsIndex).set("individual_tags", tags));
       }
       else{
         return this.searchIndex(searchColumns, values);
