@@ -78,11 +78,57 @@ class Data {
       }
     }
     if( searchColumns.length == 0){
-      return null;
+      if(json["buzzwords"] == "true" ){
+        let buzzwords = new Map();
+        for(let i = 0; i < this.rows.length; i++){
+          console.log(i);
+          let words = this.rows[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
+          let word;
+          if(words != null){
+            for(word of words){
+              let lowerCase = word.toLowerCase();
+              let temp = buzzwords.get(lowerCase);
+              if(temp == undefined){
+                buzzwords.set(lowerCase,1);
+              }
+              else{
+                buzzwords.set(lowerCase,temp+1);
+              }
+            }
+          }
+        }
+        return [Array.from(buzzwords.keys()), Array.from(buzzwords.values())]
+      }
+      else{
+        return undefined;
+      }
     }
     else{
-      return this.searchIndex(searchColumns, values);
-    }
+      if(json["buzzwords"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let buzzwords = new Map();
+        for(let i = 0; i < results.length; i++){
+          let j = 0;
+          while(j < results[i][2].length){
+            let k = 0;
+            while(isWordChar(results[i][2][k])){
+              k++;
+            }
+            let temp = results[i][2].substring(j,k);
+            let inMap = buzzwords[temp];
+            if(inMap = undefined){
+              inMap.set(temp, 1);
+            }
+            else{
+              inMap++;
+            }
+          }
+        }
+      }
+      else{
+        return this.searchIndex(searchColumns, values);
+      }
+    } 
   }
   
 
