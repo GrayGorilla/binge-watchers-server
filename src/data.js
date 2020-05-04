@@ -80,7 +80,6 @@ class Data {
     }
     return [results, resultsIndex];
   }
-
   searchText(json){
     let searchColumns = [];
     let values = [];
@@ -142,6 +141,31 @@ class Data {
         let temp = new Map().set("individual_tags", tags);
         return map_to_object(temp);
       } 
+      else if(json["categories_count"] == "true" ){
+        let category_count = new Map();
+        let categoriesJSON = JSON.parse(fs.readFileSync('data/US_category_id.json'));
+        let categoriesMap = new Map();
+        let value;
+        for(value of categoriesJSON["items"]){
+          categoriesMap.set(value["id"],value["snippet"]["title"]); 
+        }
+        let uniqueVideos = new Set();
+        for(let i = 0; i < this.rows.length; i++){
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            let categoryid = this.rows[i][4];
+            let temp = category_count.get(categoriesMap.get(categoryid));
+            if(temp == undefined){
+              category_count.set(categoriesMap.get(categoryid), 1);
+            }
+            else{
+              category_count.set(categoriesMap.get(categoryid),temp+1);
+            }
+          }
+        }
+        let temp = new Map().set("category_count", category_count);
+        return map_to_object(temp);
+      }
       else{
         return undefined;
       }
@@ -196,6 +220,32 @@ class Data {
           }
         }
         return map_to_object(new Map().set("results",results).set("resultsIndex",resultsIndex).set("individual_tags", tags));
+      }
+      else if(json["categories_count"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let category_count = new Map();
+        let categoriesJSON = JSON.parse(fs.readFileSync('data/US_category_id.json'));
+        let categoriesMap = new Map();
+        let value;
+        for(value of categoriesJSON["items"]){
+          categoriesMap.set(value["id"],value["snippet"]["title"]); 
+        }
+        let uniqueVideos = new Set();
+        for(let i = 0; i < results.length; i++){
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            let categoryid = results[i][4];
+            let temp = category_count.get(categoriesMap.get(categoryid));
+            if(temp == undefined){
+              category_count.set(categoriesMap.get(categoryid), 1);
+            }
+            else{
+              category_count.set(categoriesMap.get(categoryid),temp+1);
+            }
+          }
+        }
+        let temp = new Map().set("results",results).set("resultsIndex",resultsIndex).set("category_count", category_count);
+        return map_to_object(temp);
       }
       else{
         let [results, resultsIndex] = this.searchIndex(searchColumns, values);
