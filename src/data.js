@@ -166,6 +166,26 @@ class Data {
         let temp = new Map().set("category_count", category_count);
         return map_to_object(temp);
       }
+      else if(json["day_of_the_week"] == "true" ){
+        let days = new Map();
+        let daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let temp;
+        for(temp of daysOfTheWeek){
+          days.set(temp, 0);
+        }
+        let uniqueVideos = new Set();
+        for(let i = 0; i < this.rows.length; i++){
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            let dateText = this.rows[i][1].match(/[^.]+/gi);
+            temp = new Date(parseInt("20" + dateText[0]),parseInt(dateText[2])-1, parseInt(dateText[1]));
+            let dayString = daysOfTheWeek[temp.getDay()];
+            days.set(dayString, days.get(dayString)+1);
+          }
+        }
+        temp = new Map().set("day_of_the_week", days);
+        return map_to_object(temp);
+      }
       else{
         return undefined;
       }
@@ -245,6 +265,27 @@ class Data {
           }
         }
         let temp = new Map().set("results",results).set("resultsIndex",resultsIndex).set("category_count", category_count);
+        return map_to_object(temp);
+      }
+      else if(json["day_of_the_week"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let days = new Map();
+        let daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        let temp;
+        for(temp of daysOfTheWeek){
+          days.set(temp, 0);
+        }
+        let uniqueVideos = new Set();
+        for(let i = 0; i < results.length; i++){
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            let dateText = results[i][1].match(/[^.]+/gi);
+            temp = new Date(parseInt("20" + dateText[0]),parseInt(dateText[2])-1, parseInt(dateText[1]));
+            let dayString = daysOfTheWeek[temp.getDay()];
+            days.set(dayString, days.get(dayString)+1);
+          }
+        }
+        temp = new Map().set("results",results).set("resultsIndex",resultsIndex).set("day_of_the_week", days);
         return map_to_object(temp);
       }
       else{
