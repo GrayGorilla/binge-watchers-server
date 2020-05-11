@@ -366,6 +366,15 @@ class Data {
         let temp = new Map().set("results",results).set("resultsIndex", resultsIndex).set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
         return map_to_object(temp);
       }
+      else if(json["comments_data"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let comments_data = [];
+        for(let i = 0; i < results.length; i++){
+          comments_data.push([results[i][7],parseInt(results[i][8])/(parseInt(results[i][8])+parseInt(results[i][9])), results[i][12]]);
+        }
+        let temp = new Map().set("results", results).set("resultsIndex", resultsIndex).set("comments_data", comments_data);
+        return map_to_object(temp);
+      }
       else{
         let [results, resultsIndex] = this.searchIndex(searchColumns, values);
         return map_to_object(new Map().set("results", results).set("resultsIndex", resultsIndex));
