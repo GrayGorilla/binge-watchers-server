@@ -3,6 +3,38 @@ const fs = require('fs');
 var SortedMap = require("collections/sorted-map");
 var Set = require("collections/set");
 
+function insert_sorted(the_array, number){
+  let i = 0;
+  while(i < the_array.length && number > the_array[i]){
+    i++;
+  }
+  if(i == the_array.length){
+    the_array.push(number);
+  }
+  else{
+    the_array.splice(i, 0, number);
+  }
+}
+
+function statistics(the_array){
+  //console.log("the_array", the_array);
+  let sum = 0;
+  for(let i = 0; i < the_array.length; i++){
+    sum += the_array[i];
+  }
+  let mean = sum / the_array.length;
+  let median;
+  if(the_array.length % 2 == 0){
+    median = (the_array[the_array.length / 2] + the_array[the_array.length / 2 + 1]) / 2;
+  }
+  else{
+    median = the_array[Math.floor(the_array.length / 2)];
+     
+  }
+  let min = the_array[0];
+  let max = the_array[the_array.length - 1];
+  return [mean, median, min, max];
+}
 
 //davemackintosh's map to json gist
 function map_to_object(map) {
@@ -184,6 +216,25 @@ class Data {
           }
         }
         temp = new Map().set("day_of_the_week", days);
+        return map_to_object(temp);
+      }
+      else if(json["days_til_trending"] == "true" ){
+        let days_til_trending_list = [];
+        let uniqueVideos = new Set();
+        for(let i = 0; i < this.rows.length; i++){
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            let trendingDateText = this.rows[i][1].match(/[^.]+/gi);
+            let trendingDate = new Date(parseInt("20" + trendingDateText[0]),parseInt(trendingDateText[2])-1, parseInt(trendingDateText[1]));
+            let publishDateText = this.rows[i][5].match(/[0-9]+/gi);
+            let publishDate = new Date(parseInt(publishDateText[0]), parseInt(publishDateText[1])-1, parseInt(publishDateText[2]));
+            let millisecondDifference = trendingDate.getTime() - publishDate.getTime();
+            let dayDifference = Math.floor(millisecondDifference / (24 * 3600000));
+            insert_sorted(days_til_trending_list, dayDifference);
+          }
+        }
+        let [mean, median, min, max] = statistics(days_til_trending_list);
+        let temp = new Map().set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
         return map_to_object(temp);
       }
       else{
