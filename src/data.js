@@ -339,6 +339,26 @@ class Data {
         temp = new Map().set("results",results).set("resultsIndex",resultsIndex).set("day_of_the_week", days);
         return map_to_object(temp);
       }
+      else if(json["days_til_trending"] == "true" ){
+        let [results, resultsIndex] = this.searchIndex(searchColumns, values);
+        let days_til_trending_list = [];
+        let uniqueVideos = new Set();
+        for(let i = 0; i < results.length; i++){
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            let trendingDateText = results[i][1].match(/[^.]+/gi);
+            let trendingDate = new Date(parseInt("20" + trendingDateText[0]),parseInt(trendingDateText[2])-1, parseInt(trendingDateText[1]));
+            let publishDateText = results[i][5].match(/[0-9]+/gi);
+            let publishDate = new Date(parseInt(publishDateText[0]), parseInt(publishDateText[1])-1, parseInt(publishDateText[2]));
+            let millisecondDifference = trendingDate.getTime() - publishDate.getTime();
+            let dayDifference = Math.floor(millisecondDifference / (24 * 3600000));
+            insert_sorted(days_til_trending_list, dayDifference);
+          }
+        }
+        let [mean, median, min, max] = statistics(days_til_trending_list);
+        let temp = new Map().set("results",results).set("resultsIndex", resultsIndex).set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
+        return map_to_object(temp);
+      }
       else{
         let [results, resultsIndex] = this.searchIndex(searchColumns, values);
         return map_to_object(new Map().set("results", results).set("resultsIndex", resultsIndex));
