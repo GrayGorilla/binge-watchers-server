@@ -4,12 +4,153 @@ const csv = require('./csv.js');
 const data = require('./data.js');
 const bodyParser = require('body-parser');
 
+const map_to_object = data.map_to_object
 const parseCSV = csv.parseCSV;
 const app = express();
 
+
+
 const port = 5000;
 
-var currentDataSet = parseCSV("USvideos");
+
+let currentUniqueVideos;
+let uniqueVideos = new Map();
+{
+  let currentDataSet = parseCSV("CAvideos");
+  currentUniqueVideos = currentDataSet.uniqueVideos();
+  for(key of currentUniqueVideos){
+    let temp = uniqueVideos.get(key);
+    if(temp != undefined){
+      uniqueVideos.set(key, temp + 1);
+    }
+    else{
+      uniqueVideos.set(key, 1);
+    }
+  }
+}
+console.log("parsed CAvideos");
+{
+  let currentDataSet = parseCSV("DEvideos");
+  currentUniqueVideos = currentDataSet.uniqueVideos();
+  for(key of currentUniqueVideos){
+    let temp = uniqueVideos.get(key);
+    if(temp != undefined){
+      uniqueVideos.set(key, temp + 1);
+    }
+    else{
+      uniqueVideos.set(key, 1);
+    }
+  }
+}
+console.log("parsed DEvideos");
+/*
+{
+  let currentDataSet = parseCSV("FRvideos");
+  currentUniqueVideos = currentDataSet.uniqueVideos();
+  for(key of currentUniqueVideos){
+    let temp = uniqueVideos.get(key);
+    if(temp != undefined){
+      uniqueVideos.set(key, temp + 1);
+    }
+    else{
+      uniqueVideos.set(key, 1);
+    }
+  }
+}
+console.log("parsed FRvideos");
+*/
+{ 
+  let currentDataSet = parseCSV("GBvideos");
+  currentUniqueVideos = currentDataSet.uniqueVideos();
+  for(key of currentUniqueVideos){
+    let temp = uniqueVideos.get(key);
+    if(temp != undefined){
+      uniqueVideos.set(key, temp + 1);
+    }
+    else{
+      uniqueVideos.set(key, 1);
+    }
+  }
+}
+console.log("parsed GBvideos");
+/*
+let currentDataSet = parseCSV("INvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed INvideos");
+
+currentDataSet = parseCSV("JPvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed JPvideos");
+
+currentDataSet = parseCSV("KRvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed KRvideos");
+
+currentDataSet = parseCSV("MXvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed MXvideos");
+
+currentDataSet = parseCSV("RUvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed RUvideos");
+*/
+currentDataSet = parseCSV("USvideos");
+currentUniqueVideos = currentDataSet.uniqueVideos();
+for(key of currentUniqueVideos){
+  let temp = uniqueVideos.get(key);
+  if(temp != undefined){
+    uniqueVideos.set(key, temp + 1);
+  }
+  else{
+    uniqueVideos.set(key, 1);
+  }
+}
+console.log("parsed USvideos");
 
 // Removes CORS error
 app.use(cors());
@@ -139,6 +280,13 @@ app.put('/backup', function(req, res) {
     console.log(req.query);
     console.log('\nServer is running on PORT:', port); 
   }
+});
+
+app.get('/world_videos', function(req, res){
+  console.log(uniqueVideos);
+  let temp = new Map();
+  temp.set("unique_videos", uniqueVideos);
+  res.status(200).json(map_to_object(temp));
 });
 
 app.listen(port, function() {

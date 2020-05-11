@@ -58,8 +58,8 @@ class Data {
       this.maps.push(new SortedMap());
     }
     for(let i = 0; i < this.rows.length; i++){
-      for(let j = 0; j < this.rows[i].length; j++){
-        if(this.maps[j].has(rows[i][j])){
+      for(let j = 0; j < this.columns.length; j++){
+        if( this.maps[j].has(rows[i][j])){
           this.maps[j].get(this.rows[i][j]).add(i);
         }
         else{
@@ -70,7 +70,15 @@ class Data {
       }
     }
   }
-  
+  uniqueVideos(){
+    let uniqueVideos = new Set();
+    for(let i = 0; i < this.rows.length; i++){
+      if(!uniqueVideos.has(this.rows[i][0])){
+        uniqueVideos.add(this.rows[i][0]);
+      }     
+    }
+    return uniqueVideos;
+  }
   searchIndex(columnsIndex, values){
     if(columnsIndex.length != values.length){
       return null;
@@ -514,5 +522,6 @@ class Data {
 }
 
 module.exports = {
-    Data: Data
+    Data: Data,
+    map_to_object: map_to_object
 }
