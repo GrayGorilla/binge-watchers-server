@@ -17,7 +17,6 @@ function insert_sorted(the_array, number){
 }
 
 function statistics(the_array){
-  //console.log("the_array", the_array);
   let sum = 0;
   for(let i = 0; i < the_array.length; i++){
     sum += the_array[i];
@@ -235,6 +234,14 @@ class Data {
         }
         let [mean, median, min, max] = statistics(days_til_trending_list);
         let temp = new Map().set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
+        return map_to_object(temp);
+      }
+      else if(json["comments_data"] == "true" ){
+        let comments_data = [];
+        for(let i = 0; i < this.rows.length; i++){
+          comments_data.push([this.rows[i][7],parseInt(this.rows[i][8])/(parseInt(this.rows[i][8])+parseInt(this.rows[i][9])), this.rows[i][12]]);
+        }
+        let temp = new Map().set("comments_data", comments_data);
         return map_to_object(temp);
       }
       else{
