@@ -377,8 +377,12 @@ class Data {
       else if(json["comments_data"] == "true" ){
         let [results, resultsIndex] = this.searchIndex(searchColumns, values);
         let comments_data = [];
+        let uniqueVideos = new Set();
         for(let i = 0; i < results.length; i++){
-          comments_data.push([results[i][7],parseInt(results[i][8])/(parseInt(results[i][8])+parseInt(results[i][9])), results[i][12]]);
+          if(!uniqueVideos.has(results[i][0])){
+            uniqueVideos.add(results[i][0]);
+            comments_data.push([results[i][7],parseInt(results[i][8])/(parseInt(results[i][8])+parseInt(results[i][9])), results[i][12]]);
+          }
         }
         let temp = new Map().set("results", results).set("resultsIndex", resultsIndex).set("comments_data", comments_data);
         return map_to_object(temp);

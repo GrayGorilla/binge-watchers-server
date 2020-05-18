@@ -303,9 +303,11 @@ app.put('/backup', function(req, res) {
 });
 
 app.get('/world_videos', function(req, res){
-  console.log(uniqueVideos);
+  //console.log(uniqueVideos);
+  let start = performance.now();
   let temp = new Map();
-  temp.set("unique_videos", uniqueVideos);
+  temp.set("unique_videos", uniqueVideos); 
+  console.log("world_video search took:  ", performance.now()- start, " milliseconds");
   res.status(200).json(map_to_object(temp));
 });
 
