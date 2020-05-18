@@ -246,8 +246,12 @@ class Data {
       }
       else if(json["comments_data"] == "true" ){
         let comments_data = [];
-        for(let i = 0; i < this.rows.length; i++){
-          comments_data.push([this.rows[i][7],parseInt(this.rows[i][8])/(parseInt(this.rows[i][8])+parseInt(this.rows[i][9])), this.rows[i][12]]);
+        let uniqueVideos = new Set();
+        for(let i = this.rows.length-1; i >=0; i--){
+          if(!uniqueVideos.has(this.rows[i][0])){
+            uniqueVideos.add(this.rows[i][0]);
+            comments_data.push([this.rows[i][7],parseInt(this.rows[i][8])/(parseInt(this.rows[i][8])+parseInt(this.rows[i][9])), this.rows[i][12]]);
+          }
         }
         let temp = new Map().set("comments_data", comments_data);
         return map_to_object(temp);
