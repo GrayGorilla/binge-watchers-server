@@ -54,6 +54,8 @@ class Data {
     this.columns = columns;
     this.rows = rows;
     this.maps = [];
+    this.dirtyBits = [true, true, true, true, true, true];
+    this.caches = [null, null, null, null, null, null];
     for(let i = 0; i < this.columns.length; i++){
       this.maps.push(new SortedMap());
     }
@@ -131,130 +133,178 @@ class Data {
     }
     if( searchColumns.length == 0){
       if(json["buzzwords"] == "true" ){
-        let buzzwords = new Map();
-        let uniqueVideos = new Set();
-        for(let i = 0; i < this.rows.length; i++){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            let words = this.rows[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
-            let word;
-            if(words != null){
-              for(word of words){
-                let lowerCase = word.toLowerCase();
-                let temp = buzzwords.get(lowerCase);
-                if(temp == undefined){
-                  buzzwords.set(lowerCase,1);
-                }
-                else{
-                  buzzwords.set(lowerCase,temp+1);
+        let temp;
+        if(this.dirtyBits[0] == true){    
+          let buzzwords = new Map();
+          let uniqueVideos = new Set();
+          for(let i = 0; i < this.rows.length; i++){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              let words = this.rows[i][2].match(/[a-z]+(([\'\-]?[a-z]+)+)?/gi);
+              let word;
+              if(words != null){
+                for(word of words){
+                  let lowerCase = word.toLowerCase();
+                  let temp2 = buzzwords.get(lowerCase);
+                  if(temp2 == undefined){
+                    buzzwords.set(lowerCase,1);
+                  }
+                  else{
+                    buzzwords.set(lowerCase,temp2+1);
+                  }
                 }
               }
             }
           }
+          temp = new Map().set("buzzwords", buzzwords);
+          this.caches[0] = temp;
+          this.dirtyBits[0] = false;
         }
-        let temp = new Map().set("buzzwords", buzzwords);
+        else{
+          temp = this.caches[0]
+        }
         return map_to_object(temp);
       }
       else if(json["individual_tags"] == "true" ){
-        let tags = new Map();
-        let uniqueVideos = new Set();
-        for(let i = 0; i < this.rows.length; i++){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            let tagsText = this.rows[i][6].match(/[^\"\|\"]+/gi);
-            let tag;
-            if(tagsText != null){
-              for(tag of tagsText){
-                let lowerCase = tag.toLowerCase();
-                let temp = tags.get(lowerCase);
-                if(temp == undefined){
-                  tags.set(lowerCase,1);
-                }
-                else{
-                  tags.set(lowerCase,temp+1);
+        let temp;
+        if(this.dirtyBits[1] == true){
+          let tags = new Map();
+          let uniqueVideos = new Set();
+          for(let i = 0; i < this.rows.length; i++){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              let tagsText = this.rows[i][6].match(/[^\"\|\"]+/gi);
+              let tag;
+              if(tagsText != null){
+                for(tag of tagsText){
+                  let lowerCase = tag.toLowerCase();
+                  let temp2 = tags.get(lowerCase);
+                  if(temp2 == undefined){
+                    tags.set(lowerCase,1);
+                  }
+                  else{
+                    tags.set(lowerCase,temp2+1);
+                  }
                 }
               }
             }
           }
+          temp = new Map().set("individual_tags", tags);
+          this.caches[1] = temp;
+          this.dirtyBits[1] = false;
         }
-        let temp = new Map().set("individual_tags", tags);
+        else{
+          temp = this.caches[1];
+        }
         return map_to_object(temp);
       } 
       else if(json["categories_count"] == "true" ){
-        let category_count = new Map();
-        let categoriesJSON = JSON.parse(fs.readFileSync('data/US_category_id.json'));
-        let categoriesMap = new Map();
-        let value;
-        for(value of categoriesJSON["items"]){
-          categoriesMap.set(value["id"],value["snippet"]["title"]); 
-        }
-        let uniqueVideos = new Set();
-        for(let i = 0; i < this.rows.length; i++){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            let categoryid = this.rows[i][4];
-            let temp = category_count.get(categoriesMap.get(categoryid));
-            if(temp == undefined){
-              category_count.set(categoriesMap.get(categoryid), 1);
-            }
-            else{
-              category_count.set(categoriesMap.get(categoryid),temp+1);
+        let output;
+        if(this.dirtyBits[2] == true){
+          let category_count = new Map();
+          let categoriesJSON = JSON.parse(fs.readFileSync('data/US_category_id.json'));
+          let categoriesMap = new Map();
+          let value;
+          for(value of categoriesJSON["items"]){
+            categoriesMap.set(value["id"],value["snippet"]["title"]); 
+          }
+          let uniqueVideos = new Set();
+          for(let i = 0; i < this.rows.length; i++){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              let categoryid = this.rows[i][4];
+              let temp = category_count.get(categoriesMap.get(categoryid));
+              if(temp == undefined){
+                category_count.set(categoriesMap.get(categoryid), 1);
+              }
+              else{
+                category_count.set(categoriesMap.get(categoryid),temp+1);
+              }
             }
           }
+          output = new Map().set("category_count", category_count);
+          this.caches[2] = output;
+          this.dirtyBits[2] = false;
         }
-        let temp = new Map().set("category_count", category_count);
-        return map_to_object(temp);
+        else{
+          output = this.caches[2];
+        }
+        return map_to_object(output);
       }
       else if(json["day_of_the_week"] == "true" ){
-        let days = new Map();
-        let daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-        let temp;
-        for(temp of daysOfTheWeek){
-          days.set(temp, 0);
-        }
-        let uniqueVideos = new Set();
-        for(let i = 0; i < this.rows.length; i++){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            let dateText = this.rows[i][1].match(/[^.]+/gi);
-            temp = new Date(parseInt("20" + dateText[0]),parseInt(dateText[2])-1, parseInt(dateText[1]));
-            let dayString = daysOfTheWeek[temp.getDay()];
-            days.set(dayString, days.get(dayString)+1);
+        let output;
+        if(this.dirtyBits[3] == true){
+          let days = new Map();
+          let daysOfTheWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+          let temp;
+          for(temp of daysOfTheWeek){
+            days.set(temp, 0);
           }
+          let uniqueVideos = new Set();
+          for(let i = 0; i < this.rows.length; i++){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              let dateText = this.rows[i][1].match(/[^.]+/gi);
+              temp = new Date(parseInt("20" + dateText[0]),parseInt(dateText[2])-1, parseInt(dateText[1]));
+              let dayString = daysOfTheWeek[temp.getDay()];
+              days.set(dayString, days.get(dayString)+1);
+            }
+          }
+          output = new Map().set("day_of_the_week", days);
+          this.caches[3] = output;
+          this.dirtyBits[3] = false;
         }
-        temp = new Map().set("day_of_the_week", days);
-        return map_to_object(temp);
+        else{
+          output = this.caches[3];
+        }
+        return map_to_object(output);
       }
       else if(json["days_til_trending"] == "true" ){
-        let days_til_trending_list = [];
-        let uniqueVideos = new Set();
-        for(let i = 0; i < this.rows.length; i++){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            let trendingDateText = this.rows[i][1].match(/[^.]+/gi);
-            let trendingDate = new Date(parseInt("20" + trendingDateText[0]),parseInt(trendingDateText[2])-1, parseInt(trendingDateText[1]));
-            let publishDateText = this.rows[i][5].match(/[0-9]+/gi);
-            let publishDate = new Date(parseInt(publishDateText[0]), parseInt(publishDateText[1])-1, parseInt(publishDateText[2]));
-            let millisecondDifference = trendingDate.getTime() - publishDate.getTime();
-            let dayDifference = Math.floor(millisecondDifference / (24 * 3600000));
-            insert_sorted(days_til_trending_list, dayDifference);
+        let output;
+        if(this.dirtyBits[4] == true){
+          let days_til_trending_list = [];
+          let uniqueVideos = new Set();
+          for(let i = 0; i < this.rows.length; i++){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              let trendingDateText = this.rows[i][1].match(/[^.]+/gi);
+              let trendingDate = new Date(parseInt("20" + trendingDateText[0]),parseInt(trendingDateText[2])-1, parseInt(trendingDateText[1]));
+              let publishDateText = this.rows[i][5].match(/[0-9]+/gi);
+              let publishDate = new Date(parseInt(publishDateText[0]), parseInt(publishDateText[1])-1, parseInt(publishDateText[2]));
+              let millisecondDifference = trendingDate.getTime() - publishDate.getTime();
+              let dayDifference = Math.floor(millisecondDifference / (24 * 3600000));
+              insert_sorted(days_til_trending_list, dayDifference);
+            }
           }
+          let [mean, median, min, max] = statistics(days_til_trending_list);
+          output = new Map().set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
+          this.caches[4] = output;
+          this.dirtyBits[4] = false;
         }
-        let [mean, median, min, max] = statistics(days_til_trending_list);
-        let temp = new Map().set("days_til_trending", new Map().set("mean", mean).set("median", median).set("min", min).set("max", max));
-        return map_to_object(temp);
+        else{
+          output = this.caches[4];
+        }
+        return map_to_object(output);
       }
       else if(json["comments_data"] == "true" ){
-        let comments_data = [];
-        let uniqueVideos = new Set();
-        for(let i = this.rows.length-1; i >=0; i--){
-          if(!uniqueVideos.has(this.rows[i][0])){
-            uniqueVideos.add(this.rows[i][0]);
-            comments_data.push([this.rows[i][7],parseInt(this.rows[i][8])/(parseInt(this.rows[i][8])+parseInt(this.rows[i][9])), this.rows[i][12]]);
+        let output;
+        if(this.dirtyBits[5] == true){
+          let comments_data = [];
+          let uniqueVideos = new Set();
+          for(let i = this.rows.length-1; i >=0; i--){
+            if(!uniqueVideos.has(this.rows[i][0])){
+              uniqueVideos.add(this.rows[i][0]);
+              comments_data.push([this.rows[i][7],parseInt(this.rows[i][8])/(parseInt(this.rows[i][8])+parseInt(this.rows[i][9])), this.rows[i][12]]);
+            }
           }
+          output = new Map().set("comments_data", comments_data);
+          this.caches[5] = output;
+          this.dirtyBits[5] = false;
         }
-        let temp = new Map().set("comments_data", comments_data);
-        return map_to_object(temp);
+        else{
+          output = this.caches[5];
+        }
+        return map_to_object(output);
       }
       else{
         return undefined;
@@ -421,6 +471,9 @@ class Data {
   }
 
   updateText(index, json){
+    for(let i = 0; i < this.dirtyBits.length; i++){
+      dirtyBits[i] = true;
+    }
     let row = [];
     
     for(let i = 0; i < this.columns.length; i++){
@@ -457,6 +510,9 @@ class Data {
   }
   
   createRow(json){
+    for(let i = 0; i < this.dirtyBits.length; i++){
+      dirtyBits[i] = true;
+    }
     let temp = 0;
     let row = [];
     for(let i = 0; i < this.columns.length; i++){
@@ -488,6 +544,9 @@ class Data {
   }
 
   removeRows(indexes){
+    for(let i = 0; i < this.dirtyBits.length; i++){
+      dirtyBits[i] = true;
+    }
     indexes.sort(function(a,b){return a-b}).reverse();
 
     if(indexes[0] < 0 || indexes[0] > this.rows.length || indexes[indexes.length - 1] < 0){
