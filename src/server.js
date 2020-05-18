@@ -3,6 +3,7 @@ const cors = require('cors');
 const csv = require('./csv.js');
 const data = require('./data.js');
 const bodyParser = require('body-parser');
+const {performance} = require('perf_hooks');
 
 const map_to_object = data.map_to_object
 const parseCSV = csv.parseCSV;
@@ -165,12 +166,31 @@ app.get('/test', function(req, res) {
 
 
 app.get('/data', function(req, res) {
+    let start = performance.now();
     let json = currentDataSet.searchText(req.query);
+    if(req.query["buzzwords"] == "true"){
+      console.log("buzzwords search took:  ", performance.now()- start, " milliseconds");
+    }
+    else if(req.query["individual_tags"] == "true"){
+      console.log("individual_tags search took:  ", performance.now()- start, " milliseconds");
+    }
+    else if(req.query["categories_count"] == "true"){
+      console.log("categories_count search took:  ", performance.now()- start, " milliseconds");
+    }
+    else if(req.query["day_of_the_week"] == "true"){
+      console.log("day_of_the_week search took:  ", performance.now()- start, " milliseconds");
+    }
+    else if(req.query["days_til_trending"] == "true"){
+      console.log("days_til_trending search took:  ", performance.now()- start, " milliseconds");
+    }
+    else if(req.query["comments_data"] == "true"){
+      console.log("comments_data search took:  ", performance.now()- start, " milliseconds");
+    }
     res.status(200).json(json);
     // Output Search Results
-    console.log('Search Results:');
-    console.log(json);
-    console.log('\nServer is running on PORT:', port);
+    //console.log('Search Results:');
+    //console.log(json);
+    //console.log('\nServer is running on PORT:', port);
 });
 
 app.put('/data', function(req, res) {
