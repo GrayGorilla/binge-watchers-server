@@ -472,7 +472,7 @@ class Data {
 
   updateText(index, json){
     for(let i = 0; i < this.dirtyBits.length; i++){
-      dirtyBits[i] = true;
+      this.dirtyBits[i] = true;
     }
     let row = [];
     
@@ -488,9 +488,12 @@ class Data {
     this.updateIndex(index, row);
   }
   
-  insertRow(row){
+  insertRow(row){ 
     if(row.length != this.columns.length){
       return null;
+    }
+    for(let i = 0; i < this.dirtyBits.length; i++){
+      this.dirtyBits[i] = true;
     }
     else{ 
       let index = this.rows.length;
@@ -511,7 +514,7 @@ class Data {
   
   createRow(json){
     for(let i = 0; i < this.dirtyBits.length; i++){
-      dirtyBits[i] = true;
+      this.dirtyBits[i] = true;
     }
     let temp = 0;
     let row = [];
@@ -545,7 +548,7 @@ class Data {
 
   removeRows(indexes){
     for(let i = 0; i < this.dirtyBits.length; i++){
-      dirtyBits[i] = true;
+      this.dirtyBits[i] = true;
     }
     indexes.sort(function(a,b){return a-b}).reverse();
 
