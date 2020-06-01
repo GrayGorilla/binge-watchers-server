@@ -491,11 +491,11 @@ class Data {
   insertRow(row){ 
     if(row.length != this.columns.length){
       return null;
-    }
-    for(let i = 0; i < this.dirtyBits.length; i++){
-      this.dirtyBits[i] = true;
-    }
-    else{ 
+    } 
+    else{
+      for(let i = 0; i < this.dirtyBits.length; i++){
+        this.dirtyBits[i] = true;
+      }
       let index = this.rows.length;
       this.rows.push(row);
       for(let i = 0; i < this.columns.length; i++){
