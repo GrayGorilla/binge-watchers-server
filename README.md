@@ -1,7 +1,7 @@
 # Binge Watchers (Server)
 Server used to host data for our YouTube analytics client.
 
-Visit [Binge Watchers Client](https://github.com/GrayGorilla/binge-watchers-server).
+Visit [Binge Watchers Client](https://github.com/GrayGorilla/binge-watchers-client).
 
 ## Available Scripts
 
